@@ -97,6 +97,17 @@ export interface DockerOptions {
    * overflowing V8's max string length and crashing the run.
    */
   readonly maxOutputTailChars?: number;
+  /**
+   * Limit the CPU resources available to the container, via `--cpus`.
+   *
+   * Maps directly to `docker run --cpus`. Accepts fractional values:
+   *
+   * - `2` → `--cpus 2` (at most 2 CPUs)
+   * - `1.5` → `--cpus 1.5` (at most 1.5 CPUs)
+   *
+   * When omitted, no `--cpus` flag is added and the container is unconstrained.
+   */
+  readonly cpus?: number;
 }
 
 /**
@@ -167,6 +178,7 @@ export const docker = (options?: DockerOptions): SandboxProvider => {
             user: `${containerUid}:${containerGid}`,
             network: options?.network,
             groups: options?.groups,
+            cpus: options?.cpus,
             selinuxLabel,
           },
         ),
