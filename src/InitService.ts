@@ -72,15 +72,10 @@ export const getTemplateDependencies = (
 // Package manager detection (internal — not part of public API)
 // ---------------------------------------------------------------------------
 
-/** A package manager Sandcastle can detect on the host and build install commands for. */
-export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
+const PACKAGE_MANAGERS = ["npm", "pnpm", "yarn", "bun"] as const;
 
-const PACKAGE_MANAGERS: readonly PackageManager[] = [
-  "npm",
-  "pnpm",
-  "yarn",
-  "bun",
-];
+/** A package manager Sandcastle can detect on the host and build install commands for. */
+export type PackageManager = (typeof PACKAGE_MANAGERS)[number];
 
 // Lockfiles checked in priority order. bun.lock / bun.lockb are both valid bun
 // lockfiles (text vs binary), so both map to bun.
