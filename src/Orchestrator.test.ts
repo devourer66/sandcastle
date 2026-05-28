@@ -31,10 +31,11 @@ import { AgentError, AgentIdleTimeoutError } from "./errors.js";
 import { SandboxFactory } from "./SandboxFactory.js";
 import { encodeProjectPath } from "./SessionStore.js";
 import {
-  callbackAgentStreamEmitterLayer,
-  noopAgentStreamEmitterLayer,
+  agentStreamEmitterLayer,
   type AgentStreamEvent,
 } from "./AgentStreamEmitter.js";
+
+const noopAgentStreamEmitterLayer = agentStreamEmitterLayer();
 import type { BindMountSandboxHandle } from "./SandboxProvider.js";
 
 const execAsync = promisify(exec);
@@ -1159,7 +1160,7 @@ describe("Orchestrator agent stream emitter", () => {
     const displayLayer = SilentDisplay.layer(ref);
 
     const events: AgentStreamEvent[] = [];
-    const emitterLayer = callbackAgentStreamEmitterLayer((e) => {
+    const emitterLayer = agentStreamEmitterLayer((e) => {
       events.push(e);
     });
 
@@ -1249,7 +1250,7 @@ describe("Orchestrator agent stream emitter", () => {
     const ref = Ref.unsafeMake<ReadonlyArray<DisplayEntry>>([]);
     const displayLayer = SilentDisplay.layer(ref);
 
-    const emitterLayer = callbackAgentStreamEmitterLayer(() => {
+    const emitterLayer = agentStreamEmitterLayer(() => {
       throw new Error("callback intentionally broken");
     });
 

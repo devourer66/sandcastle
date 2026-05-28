@@ -17,6 +17,7 @@ import {
   type NoSandboxProvider,
 } from "./SandboxProvider.js";
 import { testIsolated } from "./sandboxes/test-isolated.js";
+import { testStubProvider } from "./sandboxes/test-shared.js";
 import { noSandbox } from "./sandboxes/no-sandbox.js";
 
 vi.mock("./WorktreeManager.js", () => ({
@@ -45,32 +46,18 @@ const mockHasUncommittedChanges = vi.mocked(
 /** Create a mock sandbox provider that records calls and delegates to a no-op handle. */
 const makeMockProvider = (): {
   provider: SandboxProvider;
-  createCalls: any[];
-  closeCalls: number;
+  createCalls: unknown[];
+  readonly closeCalls: number;
 } => {
-  const createCalls: any[] = [];
-  let closeCalls = 0;
-  const provider = createBindMountSandboxProvider({
+  const stub = testStubProvider({
     name: "test-provider",
-    create: async (options) => {
-      createCalls.push(options);
-      const handle: BindMountSandboxHandle = {
-        worktreePath: SANDBOX_REPO_DIR,
-        exec: async () => ({ stdout: "", stderr: "", exitCode: 0 }),
-        copyFileIn: async () => {},
-        copyFileOut: async () => {},
-        close: async () => {
-          closeCalls++;
-        },
-      };
-      return handle;
-    },
+    worktreePath: SANDBOX_REPO_DIR,
   });
   return {
-    provider,
-    createCalls,
+    provider: stub.provider,
+    createCalls: stub.createCalls as unknown[],
     get closeCalls() {
-      return closeCalls;
+      return stub.closeCalls.count;
     },
   };
 };

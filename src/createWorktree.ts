@@ -31,10 +31,7 @@ import type { InteractiveResult } from "./interactive.js";
 import { buildLogFilename, printFileDisplayStartup } from "./run.js";
 import type { LoggingOption } from "./run.js";
 import { orchestrate, type IterationResult } from "./Orchestrator.js";
-import {
-  callbackAgentStreamEmitterLayer,
-  noopAgentStreamEmitterLayer,
-} from "./AgentStreamEmitter.js";
+import { agentStreamEmitterLayer } from "./AgentStreamEmitter.js";
 import { resolveEnv } from "./EnvResolver.js";
 import { mergeProviderEnv } from "./mergeProviderEnv.js";
 import { startSandbox } from "./startSandbox.js";
@@ -617,15 +614,16 @@ export const createWorktree = async (
           ) as any,
       });
 
-      const agentStreamEmitterLayer =
-        resolvedLogging.type === "file" && resolvedLogging.onAgentStreamEvent
-          ? callbackAgentStreamEmitterLayer(resolvedLogging.onAgentStreamEvent)
-          : noopAgentStreamEmitterLayer;
+      const streamEmitterLayer = agentStreamEmitterLayer(
+        resolvedLogging.type === "file"
+          ? resolvedLogging.onAgentStreamEvent
+          : undefined,
+      );
 
       const runLayer = Layer.mergeAll(
         reuseFactoryLayer,
         runDisplayLayer,
-        agentStreamEmitterLayer,
+        streamEmitterLayer,
       );
 
       // 7. Run orchestration

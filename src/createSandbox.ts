@@ -12,10 +12,7 @@ import {
 import { resolveEnv } from "./EnvResolver.js";
 import { mergeProviderEnv } from "./mergeProviderEnv.js";
 import { orchestrate, type IterationResult } from "./Orchestrator.js";
-import {
-  callbackAgentStreamEmitterLayer,
-  noopAgentStreamEmitterLayer,
-} from "./AgentStreamEmitter.js";
+import { agentStreamEmitterLayer } from "./AgentStreamEmitter.js";
 import {
   type PromptArgs,
   substitutePromptArgs,
@@ -308,15 +305,16 @@ const buildSandboxHandle = (
           ) as any,
       });
 
-      const agentStreamEmitterLayer =
-        resolvedLogging.type === "file" && resolvedLogging.onAgentStreamEvent
-          ? callbackAgentStreamEmitterLayer(resolvedLogging.onAgentStreamEvent)
-          : noopAgentStreamEmitterLayer;
+      const streamEmitterLayer = agentStreamEmitterLayer(
+        resolvedLogging.type === "file"
+          ? resolvedLogging.onAgentStreamEvent
+          : undefined,
+      );
 
       const runLayer = Layer.mergeAll(
         reuseFactoryLayer,
         runDisplayLayer,
-        agentStreamEmitterLayer,
+        streamEmitterLayer,
       );
 
       let result;
