@@ -457,6 +457,7 @@ describe("InitService scaffold", () => {
       expect(prompt).toContain(
         "already been filtered to issues ready for work",
       );
+      expect(prompt).toContain("sole source of truth");
       expect(prompt).toContain("Do not run your own unfiltered query");
     });
 
@@ -1508,6 +1509,7 @@ describe("InitService scaffold", () => {
       expect(prompt).toContain(
         "already been filtered to issues ready for work",
       );
+      expect(prompt).toContain("sole source of truth");
       expect(prompt).toContain("Do not run your own unfiltered query");
     });
 
